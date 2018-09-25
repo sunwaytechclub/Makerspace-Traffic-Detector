@@ -10,12 +10,14 @@ const long transmitCycle = 60;
 const int clockCycle = 25;
 int triggerCounter = 0;
 long countdown = transmitCycle * 1000;
-int lastState = 0;
+int lastState = 1;
 unsigned long lastMillis = 0;
 
 void setup() {
   
+  pinMode(8, OUTPUT);
   pinMode(9, OUTPUT);
+  pinMode(13, INPUT);
   Serial.begin(9600);
   if (!transceiver.begin()) stop(F("Unable to init Sigfox module, may be missing"));
   
@@ -29,23 +31,43 @@ void loop() {
 
   // Serial.println(countdown);
   
-  int reading = analogRead(0);
-  // Serial.println(reading);
-  analogWrite(9, reading / 4);
+  int reading = digitalRead(13);
+  Serial.println(reading);
+  digitalWrite(8, reading);
+  digitalWrite(9, reading);
 
-  // Check trigger
-  if(reading <= 900) {
+  // Check Trigger
+  if(reading == HIGH){
     if(!lastState){
       lastState = 1;
-      triggerCounter += 1;
-      Serial.println("Trigger");
+      Serial.println("Untrigger");
     }
   } else {
     if(lastState){
       lastState = 0;
-      Serial.println("Untrigger");
+      triggerCounter += 1;
+      Serial.println("Trigger");
     }
   }
+
+//  int reading = analogRead(0);
+//  Serial.println(reading);
+//  analogWrite(9, reading);
+//    
+//
+//  // Check trigger
+//  if(reading <= 900) {
+//    if(!lastState){
+//      lastState = 1;
+//      triggerCounter += 1;
+//      // Serial.println("Trigger");
+//    }
+//  } else {
+//    if(lastState){
+//      lastState = 0;
+//      // Serial.println("Untrigger");
+//    }
+//  }
 
   if(countdown <= 0){
     Message msg(transceiver);
