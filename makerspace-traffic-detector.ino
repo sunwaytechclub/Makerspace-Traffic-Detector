@@ -49,7 +49,7 @@ void loop() {
       if(lastState) {
         lastState = 0;
         triggerCounter += 1;
-        // Serial.println("Trigger");
+        Serial.println("Trigger");
         // Serial.println(triggerCounter);
         digitalWrite(9, HIGH);
       } else {
@@ -57,7 +57,7 @@ void loop() {
         if(blockingCounter <= 0){
           blockingCounter = blockingReset;
           lastState = 1;
-          // Serial.println("Reset");
+          Serial.println("Reset");
           digitalWrite(9, LOW);
         }
       }
@@ -66,21 +66,22 @@ void loop() {
     triggerCountdown = triggerCountdownThreshold;
     if(!lastState) {
       lastState = 1;
-      // Serial.println("Untrigger");
+      Serial.println("Untrigger");
       digitalWrite(9, LOW);
     }
   }
 
   if(countdown <= 0){
-    Message msg(transceiver);
-    msg.addField("ctr", triggerCounter);
-    if(msg.send()) {
-      // Serial.println("Success send");
-      triggerCounter = 0;
-      countdown = transmitCycle * 1000;
-    }
-    // transceiver.sendString(String("{\"ctr\":\"") + triggerCounter + "\"}");
-    
+//    Message msg(transceiver);
+//    msg.addField("ctr", triggerCounter);
+//    if(msg.send()) {
+//      // Serial.println("Success send");
+//      triggerCounter = 0;
+//      countdown = transmitCycle * 1000;
+//    }
+    transceiver.sendString(String(triggerCounter));
+    triggerCounter = 0;
+    countdown = transmitCycle * 1000;
   }
   
   // delay(clockCycle);
