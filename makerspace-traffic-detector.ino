@@ -7,19 +7,21 @@ static const Country country = COUNTRY_SG;
 static UnaShieldV2S transceiver(country, useEmulator, device, echo);
 
 const long transmitCycle = 60;
-int triggerCountdownThreshold = 50;
+int triggerCountdownThreshold = 120;
 int triggerCountdown = triggerCountdownThreshold;
 int triggerCounter = 0;
 long countdown = transmitCycle * 1000;
 int lastState = 1;
 unsigned long lastMillis = 0;
-long currentCycle = 0;
+unsigned long currentCycle = 0;
+
+int blockingReset = 2000;
+int blockingCounter = blockingReset;
 
 void setup() {
   
   pinMode(8, OUTPUT);
   pinMode(9, OUTPUT);
-  pinMode(12, OUTPUT);
   pinMode(13, INPUT);
   Serial.begin(9600);
   if (!transceiver.begin()) stop(F("Unable to init Sigfox module, may be missing"));
@@ -28,32 +30,44 @@ void setup() {
 
 void loop() {
 
-  int currentMillis = millis();
+  unsigned long currentMillis = millis();
   currentCycle = currentMillis - lastMillis;
-  countdown = countdown - currentCycle;
+  countdown -= currentCycle;
   lastMillis = currentMillis;
 
   // Serial.println(countdown);
 
-  digitalWrite(12, HIGH);
-  int reading = digitalRead(13);
-  digitalWrite(12, LOW);
-  digitalWrite(8, reading);
+  // Serial.println(countdown);
 
-  if(reading == LOW) {
+  int reading = digitalRead(13);
+  digitalWrite(8, reading);
+  // Serial.println(reading);
+
+  if(reading == HIGH) {
     triggerCountdown -= currentCycle;
     if(triggerCountdown <= 0) {
       if(lastState) {
         lastState = 0;
         triggerCounter += 1;
-        Serial.println("Trigger");
+        // Serial.println("Trigger");
+        // Serial.println(triggerCounter);
+        digitalWrite(9, HIGH);
+      } else {
+        blockingCounter -= currentCycle;
+        if(blockingCounter <= 0){
+          blockingCounter = blockingReset;
+          lastState = 1;
+          // Serial.println("Reset");
+          digitalWrite(9, LOW);
+        }
       }
     }
   } else {
     triggerCountdown = triggerCountdownThreshold;
     if(!lastState) {
       lastState = 1;
-      Serial.println("Untrigger");
+      // Serial.println("Untrigger");
+      digitalWrite(9, LOW);
     }
   }
 
@@ -61,7 +75,7 @@ void loop() {
     Message msg(transceiver);
     msg.addField("ctr", triggerCounter);
     if(msg.send()) {
-      Serial.println("Success send");
+      // Serial.println("Success send");
       triggerCounter = 0;
       countdown = transmitCycle * 1000;
     }
