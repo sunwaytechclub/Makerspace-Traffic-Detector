@@ -2,10 +2,10 @@
 #define IR_LED_PIN 8
 #define DURATION_HIGH 364 //14cycles * 26 us = 364us
 #define DURATION_LOW 2*364
-#define MESSAGE_LENGTH 32 //maximum of 31bits per message, stop bit = 0
+#define MESSAGE_LENGTH 32 //maximum of 31bits per message, last bit is stop bit.
 #define TIMEOUT_LENGTH 50 //50ms between each message
 
-unsigned long IRCode = 0xFFFFFFFE;
+unsigned long IRCode = 0xFFFFFFFF;
 
 void setup()
 {
@@ -23,7 +23,7 @@ void IRSetup()
 
 void IRCarrier(unsigned int duration)
 {
-  for(int i=0; i < (convertMillisToCycles(duration)); i++)
+  for(int i=0; i < (convertMicrosToCycles(duration)); i++)
   {
     digitalWrite(IR_LED_PIN, HIGH);
     digitalWrite(IR_LED_PIN, LOW);
@@ -32,8 +32,8 @@ void IRCarrier(unsigned int duration)
 }
 
 
-//Converts duration in milliseconds to number of cycles with frequency defined by CARRIER_PERIOD
-unsigned int convertMillisToCycles(unsigned int duration)
+//Converts duration in microseconds to number of cycles with frequency defined by CARRIER_PERIOD
+unsigned int convertMicrosToCycles(unsigned int duration)
 {
   return(duration/CARRIER_PERIOD);
 }
@@ -45,11 +45,11 @@ void IRSendMessage(unsigned long message)
       IRCarrier(DURATION_HIGH);
       if(message & 0x80000000)
       {
-        delayMicroseconds(DURATION_LOW);
+        delayMicroseconds(DURATION_HIGH);
       }
       else
       {
-        delayMicroseconds(DURATION_HIGH);  
+        delayMicroseconds(DURATION_LOW);  
       }
       message = message<<1;
     }
