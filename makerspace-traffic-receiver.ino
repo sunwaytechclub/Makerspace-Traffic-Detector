@@ -4,20 +4,21 @@
 
 static const Country country = COUNTRY_SG;  //  Set this to your country to configure the Sigfox transmission frequencies.
 static const bool useEmulator = false;      //  Set to true if using UnaBiz Emulator.
-static const String device = "2C2F3A";       //  Set this to your device name if you're using UnaBiz Emulator.
+static const String device = "2C3068";       //  Set this to your device name if you're using UnaBiz Emulator.
 static const bool echo = true;              //  Set to true if the Sigfox library should display the executed commands.
+static String response;
 
 static UnaShieldV2S transceiver(country, useEmulator, device, echo);  //Create transceiver object
 
-const unsigned int transmit_message_interval = 1;                      //Sets the duration of the interval (in minutes) between successive message transmissions.
-unsigned long previous_timestamp_m = 0;                                //Timestamp of the beginning of the previous iteration of void loop() in milliseconds.
-unsigned long previous_iteration_duration = 0;                          //Duration of execution of previous iteration of void loop() in milliseconds.
-long countdown = transmit_message_interval * 60 * 1000;                //Countdown timer for message transmission.
+const unsigned int transmit_message_interval = 10;                      //Sets the duration of the interval (in minutes) between successive message transmissions.
+unsigned long previous_timestamp_m = 0L;                                //Timestamp of the beginning of the previous iteration of void loop() in milliseconds.
+unsigned long previous_iteration_duration = 0L;                          //Duration of execution of previous iteration of void loop() in milliseconds.
+long countdown = transmit_message_interval * 60L * 1000L;                //Countdown timer for message transmission.
 
 unsigned int counter = 0;
-unsigned long duration_low = 0;
+unsigned long duration_low = 0L;
 bool blocking_flag =  false;
-const unsigned long TIMEOUT_LENGTH = 100000;
+const unsigned long TIMEOUT_LENGTH = 100000L;
 
 void setup()
 {
@@ -27,6 +28,9 @@ void setup()
   {
     stop(F("Unable to init Sigfox module, something is missing"));
   }
+  transceiver.sendMessageAndGetResponse("0102030405060708090a0b0c", response);
+  Serial.print(F("gvyvgjkbkhjkgvjghvy is "));
+  Serial.println(response);
 }
 
 unsigned int count_when_blocking()
@@ -95,8 +99,8 @@ void loop()
 
     //Reset after sending counter.
     counter = 0;
-    countdown = transmit_message_interval * 60 * 1000;
-    duration_low = 0;
+    countdown = transmit_message_interval * 60L * 1000L;
+    duration_low = 0L;
     blocking_flag =  false;
   }
   
