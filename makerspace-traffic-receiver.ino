@@ -6,7 +6,7 @@ static const Country country = COUNTRY_SG;  //  Set this to your country to conf
 static const bool useEmulator = false;      //  Set to true if using UnaBiz Emulator.
 static const String device = "2C3068";       //  Set this to your device name if you're using UnaBiz Emulator.
 static const bool echo = true;              //  Set to true if the Sigfox library should display the executed commands.
-static String response;
+//static String response;
 
 static UnaShieldV2S transceiver(country, useEmulator, device, echo);  //Create transceiver object
 
@@ -28,9 +28,9 @@ void setup()
   {
     stop(F("Unable to init Sigfox module, something is missing"));
   }
-  transceiver.sendMessageAndGetResponse("0102030405060708090a0b0c", response);
-  Serial.print(F("gvyvgjkbkhjkgvjghvy is "));
-  Serial.println(response);
+//  transceiver.sendMessageAndGetResponse("0102030405060708090a0b0c", response);
+//  Serial.print(F("gvyvgjkbkhjkgvjghvy is "));
+//  Serial.println(response);
 }
 
 unsigned int count_when_blocking()
