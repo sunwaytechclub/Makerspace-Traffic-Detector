@@ -4,7 +4,7 @@
 
 static const Country country = COUNTRY_SG;  //  Set this to your country to configure the Sigfox transmission frequencies.
 static const bool useEmulator = false;      //  Set to true if using UnaBiz Emulator.
-static const String device = "2C3171";       //  Set this to your device name if you're using UnaBiz Emulator.
+static const String device = "2C305B";       //  Set this to your device name if you're using UnaBiz Emulator.
 static const bool echo = true;              //  Set to true if the Sigfox library should display the executed commands.
 
 static UnaShieldV2S transceiver(country, useEmulator, device, echo);  //Create transceiver object
